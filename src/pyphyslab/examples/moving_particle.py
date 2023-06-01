@@ -9,7 +9,7 @@ if package_dir not in sys.path:
 from pyphyslab.core.window import Window
 from pyphyslab.scene.renderer import Renderer
 from pyphyslab.scene.camera import Camera, MovementRig
-from pyphyslab.scene.shpe import Mesh
+from pyphyslab.scene.shape import Mesh
 from pyphyslab.scene.scene import Scene
 from pyphyslab.scene.grid import Grid
 from pyphyslab.primitive.ellipsoid import EllipsoidPrimitive
@@ -30,8 +30,6 @@ class Example(Window):
         self.rig.set_position([0.0, 0.0, 0.0])
         self.scene.add(self.rig)
 
-        #self.camera.set_position([0, 4, 4])
-
         self.sphere = Mesh(EllipsoidPrimitive(width=0.1, height=0.1, depth=0.1), SurfaceMaterial(property_dict={"baseColor": [1, 0.5, 0.0]}))
         self.sphere.translate(-0.6, 0.5, -4.0)
         self.scene.add(self.sphere)
@@ -43,7 +41,7 @@ class Example(Window):
             damping = 0.60
         )
         
-        self.particle.add_force([0.0,0.0,0.0])
+        self.particle.add_force([50.0,0.0,0.0])
         self.particle.position = [-0.6, 0.5, -4.0]
 
         grid = Grid(

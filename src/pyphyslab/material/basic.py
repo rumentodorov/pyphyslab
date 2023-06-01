@@ -36,7 +36,7 @@ class BasicMaterial(Material):
             """
         
         super().__init__(vertex_shader_code, fragment_shader_code)
-        self.add_uniform("vec3", "baseColor", [1.0, 1.0, 1.0])
+        self.add_uniform("vec3", Material.BASE_COLLOR_UNIFORM, [1.0, 1.0, 1.0])
         if use_vertex_colors:
-            self.add_uniform("bool", "useVertexColors", False)
+            self.add_uniform("bool", Material.USE_VERTEX_COLOR_UNIFORM, False)
         self.locate_uniforms()

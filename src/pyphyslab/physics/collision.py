@@ -49,18 +49,16 @@ class GroundGontactResolver:
         self._p1 = p1
         self._restitution = 0.6
         self._min_resting_contact = -0.01
+        self._ground_contact_matrix = np.array([1, -1, 1])
     
     def resolve(self, delta_time):  
-        separating_velocity = self._p1.velocity            
+    
+        new_separating_velocity = self._p1.velocity  * self._restitution * self._ground_contact_matrix
+        next_frame__separation_velocity = self._p1.acceleration * delta_time
 
-        
-        new_separating_velocity = -separating_velocity * self._restitution
-        accumulated_caused_separation_velocity = self._p1.acceleration * delta_time
+        new_separating_velocity += self._restitution * next_frame__separation_velocity
 
-        new_separating_velocity += self._restitution * accumulated_caused_separation_velocity
-
-
-        delta_velocity = new_separating_velocity - separating_velocity
+        delta_velocity = new_separating_velocity - self._p1.velocity 
         p1_inverse_mass = 1.0 / self._p1.mass
 
         if p1_inverse_mass < 0:

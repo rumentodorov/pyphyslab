@@ -2,7 +2,7 @@ from pyphyslab.scene.camera import Camera
 from pyphyslab.scene.scene import Scene
 from pyphyslab.scene.texture import Texture, TextTexture
 from pyphyslab.primitive.rectangle import RectanglePrimitive
-from pyphyslab.scene.shpe import Mesh
+from pyphyslab.scene.shape import Mesh
 from pyphyslab.material.texture import TextureMaterial
 
 class HeadsUpDisplay:

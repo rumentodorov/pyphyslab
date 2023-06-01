@@ -18,13 +18,6 @@ class Shape3d:
         child._parent = None
 
     @property
-    def global_matrix(self):
-        if self._parent is None:
-            return self._matrix
-        else:
-            return self._parent.global_matrix @ self._matrix
-
-    @property
     def descendant_list(self):
         descendant_list = []
         nodes_to_process = [self]
@@ -35,6 +28,13 @@ class Shape3d:
             nodes_to_process = node._children_list + nodes_to_process
 
         return descendant_list
+
+    @property
+    def global_matrix(self):
+        if self._parent is None:
+            return self._matrix
+        else:
+            return self._parent.global_matrix @ self._matrix
     
     def apply_matrix(self, matrix, local=True):
         if local:
@@ -71,8 +71,6 @@ class Shape3d:
         """
         Return the local position of the object (with respect to its parent)
         """
-        # The position of an object can be determined from entries in the
-        # last column of the transform matrix
         return [self._matrix.item((0, 3)),
                 self._matrix.item((1, 3)),
                 self._matrix.item((2, 3))]

@@ -1,7 +1,7 @@
 from OpenGL.GL import *
 import pygame as pg
 
-from pyphyslab.scene.shpe import Mesh
+from pyphyslab.scene.shape import Mesh
 from pyphyslab.scene.light import Light
 
 
@@ -14,7 +14,7 @@ class Renderer:
 
         self.window_size = pg.display.get_surface().get_size()
 
-    def render(self, scene, camera, clear_color=True, clear_depth=True, render_target=None):
+    def render(self, scene, camera, clear_color=True, clear_depth=True):
         descendant_list = scene.descendant_list
         mesh_filter = lambda x: isinstance(x, Mesh)
         mesh_list = list(filter(mesh_filter, descendant_list))

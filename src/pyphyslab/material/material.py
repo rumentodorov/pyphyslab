@@ -5,16 +5,28 @@ from pyphyslab.core.shader import Uniform
 
 class Material:
 
+    MODEL_MATRIX_UNIFORM = "modelMatrix"
+    VIEW_MATRIX_UNIFORM = "viewMatrix"
+    PROJECTION_MATRIX_UNIFORM = "projectionMatrix"
+    BASE_COLLOR_UNIFORM = "baseColor"
+    USE_VERTEX_COLOR_UNIFORM = "useVertexColors"
+
+
+    DRAWING_STYLE_RENDER_SETTING = "drawStyle"
+    DOUBLE_SIDE_RENDER_SETTING = "doubleSide"
+    WIREFRAME_RENDER_STTING = "wireframe"    
+    LINE_WIDTH_RENDER_SETTING = "lineWidth"
+
     def __init__(self, vertex_shader_code, fragment_shader_code):
         self.program_ref = shader.initialize_program(vertex_shader_code,  fragment_shader_code)
         self.uniform_dict = {
-            "modelMatrix":      Uniform("mat4", None),
-            "viewMatrix":       Uniform("mat4", None),
-            "projectionMatrix": Uniform("mat4", None), 
+            Material.MODEL_MATRIX_UNIFORM:      Uniform("mat4", None),
+            Material.VIEW_MATRIX_UNIFORM:       Uniform("mat4", None),
+            Material.PROJECTION_MATRIX_UNIFORM: Uniform("mat4", None), 
         }
 
         self.setting_dict = {
-           "drawStyle": GL_TRIANGLES                 
+           Material.DRAWING_STYLE_RENDER_SETTING: GL_TRIANGLES                 
         }
 
     def add_uniform(self, data_type, variable_name, data):
@@ -31,17 +43,13 @@ class Material:
 
     def set_properties(self, property_dict):
         """
-        Convenience method for setting multiple material "properties"
-        (uniform and render setting values) from a dictionary
+        Method for setting multiple material "properties"
         """
         if property_dict:
             for name, data in property_dict.items():
-                # Update uniforms
                 if name in self.uniform_dict.keys():
                     self.uniform_dict[name].data = data
-                # Update render settings
                 elif name in self.setting_dict.keys():
                     self.setting_dict[name] = data
-                # Unknown property type
                 else:
                     raise Exception("Material has no property named: " + name)

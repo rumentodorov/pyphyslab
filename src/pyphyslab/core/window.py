@@ -5,13 +5,13 @@ from pyphyslab.core.input import KeyboardInput, MouseInput
 
 class Window:
     
-    def __init__(self, screen_size=(800, 600)):
+    def __init__(self, screen_size=(800, 600), caption = "Graphics Window"):
         pg.init()
 
         pg.display.gl_set_attribute(pg.GL_MULTISAMPLEBUFFERS, 1)
         pg.display.gl_set_attribute(pg.GL_MULTISAMPLESAMPLES, 4)
         pg.display.gl_set_attribute(pg.GL_CONTEXT_PROFILE_MASK, pg.GL_CONTEXT_PROFILE_CORE)
-        pg.display.set_caption("Graphics Window")
+        pg.display.set_caption(caption)
         
         display_flags = pg.DOUBLEBUF | pg.OPENGL
         self._screen = pg.display.set_mode(screen_size, display_flags)

@@ -2,7 +2,7 @@ import math
 from numpy.linalg import inv
 
 import pyphyslab.core.matrix as matrix
-from pyphyslab.scene.shpe import Shape3d
+from pyphyslab.scene.shape import Shape3d
 
 class Camera(Shape3d):
 
@@ -13,7 +13,6 @@ class Camera(Shape3d):
         self.view_matrix = matrix.make_identity()
 
     def update_view_matrix(self):
-        # Computers multiplicative inverse matrix - TODO Check details
         self.view_matrix = inv(self.global_matrix)
 
     def set_orthographic(self, left=-1, right=1, bottom=-1, top=1, near=-1, far=1):

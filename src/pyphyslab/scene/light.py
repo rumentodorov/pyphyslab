@@ -1,4 +1,4 @@
-from pyphyslab.scene.shpe import Shape3d
+from pyphyslab.scene.shape import Shape3d
 
 class Light(Shape3d):
     AMBIENT = 1

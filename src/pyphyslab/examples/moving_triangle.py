@@ -17,7 +17,6 @@ class Example(Window):
     def initialize(self):
         print("Initializing program...")
 
-        # vertex shader code
         vertex_shader_code = """
             in vec3 position;
             uniform vec3 translation;
@@ -27,8 +26,8 @@ class Example(Window):
                 gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);
             }
         """
-        # fragment shader code
-        fs_code = """
+
+        fragment_shader_code = """
             uniform vec3 baseColor;
             out vec4 fragColor;
             void main()
@@ -37,7 +36,7 @@ class Example(Window):
             }
         """
  
-        self.program_ref = shader.initialize_program(vertex_shader_code, fs_code)
+        self.program_ref = shader.initialize_program(vertex_shader_code, fragment_shader_code)
 
         glClearColor(0.0, 0.0, 0.0, 1.0)
 

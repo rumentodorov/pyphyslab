@@ -81,14 +81,10 @@ def make_look_at(position, target):
     world_up = [0, 1, 0]
     forward = np.subtract(target, position)
     right = np.cross(forward, world_up)
-    # If forward and world_up vectors are parallel,
-    # the right vector is zero.
-    # Fix this by perturbing the world_up vector a bit
     if np.linalg.norm(right) < 1e-6:
         offset = np.array([0, 0, -1e-3])
         right = np.cross(forward, world_up + offset)
     up = np.cross(right, forward)
-    # All vectors should have length 1
     forward = np.divide(forward, np.linalg.norm(forward))
     right = np.divide(right, np.linalg.norm(right))
     up = np.divide(up, np.linalg.norm(up))

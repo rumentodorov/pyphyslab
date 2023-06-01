@@ -9,7 +9,7 @@ if package_dir not in sys.path:
 from pyphyslab.core.window import Window
 from pyphyslab.scene.renderer import Renderer
 from pyphyslab.scene.camera import Camera, MovementRig
-from pyphyslab.scene.shpe import Mesh
+from pyphyslab.scene.shape import Mesh
 from pyphyslab.scene.scene import Scene
 from pyphyslab.scene.grid import Grid
 from pyphyslab.primitive.ellipsoid import EllipsoidPrimitive
@@ -48,7 +48,7 @@ class Example(Window):
             mass  = 100.0,  
             velocity = [0.0, 0.0, 0.0],
             acceleration=[0.0, 0.0, 0.0],
-            damping = 0.85
+            damping = 0.60
         )
         
         self.p1.position = [0.6, 0.5, -4.0]
@@ -58,7 +58,7 @@ class Example(Window):
             mass  = 0.5,  
             velocity = [0.0, 0.0, 0.0],
             acceleration=[0.0, 0.0, 0.0],
-            damping = 0.85 
+            damping = 0.60 
         )
         
         self.p2.position = [0.3, 0.5, -4.0]

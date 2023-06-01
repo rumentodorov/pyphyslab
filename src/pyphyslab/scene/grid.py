@@ -1,4 +1,4 @@
-from pyphyslab.scene.shpe import Mesh
+from pyphyslab.scene.shape import Mesh
 from pyphyslab.primitive.primitive import Primitive
 from pyphyslab.material.line import LineMaterial
 
