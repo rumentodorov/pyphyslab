@@ -21,6 +21,7 @@ from pyphyslab.material.surface import SurfaceMaterial
 
 from pyphyslab.physics.particle import Particle
 from pyphyslab.physics.collision import ParticleCollisionDetector
+from pyphyslab.scene.hud import HeadsUpDisplay
 
 class Example(Window):
      
@@ -73,6 +74,8 @@ class Example(Window):
         self.scene.add(grid)
         self._collision_detector = ParticleCollisionDetector()
         
+        self.hud = HeadsUpDisplay(screen_size=(1024, 768))
+
 
     def update(self):
         if (self.rig.activated == True):
@@ -90,5 +93,6 @@ class Example(Window):
 
         self.rig.update(self.key_input, self.mouse_input, self.delta_time)
         self.renderer.render(self.scene, self.camera)
+        self.hud.update(self.renderer)
 
 Example(screen_size=(1024,768)).run()

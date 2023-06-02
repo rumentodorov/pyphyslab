@@ -21,6 +21,7 @@ from pyphyslab.material.surface import SurfaceMaterial
 
 from pyphyslab.physics.particle import Particle
 from pyphyslab.physics.world import World
+from pyphyslab.scene.hud import HeadsUpDisplay
 
 class Test(Window):
      
@@ -72,6 +73,7 @@ class Test(Window):
         grid.rotate_x(-math.pi / 2)
         self.scene.add(grid)
         self.world = World(self.p1, self.p2)
+        self.hud = HeadsUpDisplay(screen_size=(1024, 768))
 
     def update(self):
         if (self.rig.activated == True):
@@ -85,5 +87,6 @@ class Test(Window):
 
         self.rig.update(self.key_input, self.mouse_input, self.delta_time)
         self.renderer.render(self.scene, self.camera)
+        self.hud.update(self.renderer)
 
 Test(screen_size=(1024,768)).run()
