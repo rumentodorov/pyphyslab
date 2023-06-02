@@ -29,7 +29,6 @@ class Example(Window):
         self.rig.set_position([0.0, 0.0, 0.0])
         self.scene.add(self.rig)
 
-        #self.camera.set_position([0, 4, 4])
         box = BoxPrimitive()        
 
         cube1 = Mesh(box, SurfaceMaterial(property_dict={"baseColor": [1, 1, 0]})) 

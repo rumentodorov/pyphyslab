@@ -1,6 +1,54 @@
 from OpenGL.GL import *
 from pyphyslab.material.material import Material
 
+_GLSL_LIGHT_TYPE_STRUCT = """
+    struct Light
+    {
+        int lightType;  // 1 = AMBIENT, 2 = DIRECTIONAL, 3 = POINT
+        vec3 color;  // used by all lights
+        vec3 direction; // used by directional lights
+        vec3 position;  // used by point lights
+        vec3 attenuation;  // used by all lights
+    };
+"""
+
+_GLSL_CALC_LIGHT_FUNCTION = """
+    vec3 calculateLight(Light light, vec3 pointPosition, vec3 pointNormal)
+    {
+        float ambient = 0;
+        float diffuse = 0;
+        float specular = 0;
+        float attenuation = 1;
+        vec3 lightDirection = vec3(0, 0, 0);
+                
+        if (light.lightType == 1)  // ambient light
+        {
+            ambient = 1;
+        }
+        else if (light.lightType == 2)  // directional light 
+        {
+            lightDirection = normalize(light.direction);
+        }
+        else if (light.lightType == 3)  // point light 
+        {
+            lightDirection = normalize(pointPosition - light.position);
+            float distance = length(light.position - pointPosition);
+            attenuation = 1.0 / (light.attenuation[0] 
+                + light.attenuation[1] * distance 
+                + light.attenuation[2] * distance * distance);
+        }
+                
+        if (light.lightType > 1)  // directional or point light
+        {
+            pointNormal = normalize(pointNormal);
+            diffuse = max(dot(pointNormal, -lightDirection), 0.0);
+            diffuse *= attenuation;
+        }
+        
+        return light.color * (ambient + diffuse + specular);
+    }
+""" 
+
 class LightedMaterial(Material):
     
     def __init__(self, number_of_light_sources=1):
@@ -35,58 +83,17 @@ class FlatMaterial(LightedMaterial):
     """
     def __init__(self, property_dict=None, number_of_light_sources=1):
         super().__init__(number_of_light_sources)
-        self.add_uniform("vec3", "baseColor", [1.0, 1.0, 1.0])
+        self.add_uniform("vec3", LightedMaterial.BASE_COLLOR_UNIFORM, [1.0, 1.0, 1.0])
         self.locate_uniforms()
-        self.setting_dict["doubleSide"] = True
-        self.setting_dict["wireframe"] = False
-        self.setting_dict["lineWidth"] = 1
+        self.setting_dict[LightedMaterial.DOUBLE_SIDE_RENDER_SETTING] = True
+        self.setting_dict[LightedMaterial.WIREFRAME_RENDER_STTING] = False
+        self.setting_dict[LightedMaterial.LINE_WIDTH_RENDER_SETTING] = 1
         self.set_properties(property_dict)
 
     @property
     def vertex_shader_code(self):
-        return """
-            struct Light
-            {
-                int lightType;  // 1 = AMBIENT, 2 = DIRECTIONAL, 3 = POINT
-                vec3 color;  // used by all lights
-                vec3 direction; // used by directional lights
-                vec3 position;  // used by point lights
-                vec3 attenuation;  // used by all lights
-            };""" + self.declaring_light_uniforms_in_shader_code + """
-            vec3 calculateLight(Light light, vec3 pointPosition, vec3 pointNormal)
-            {
-                float ambient = 0;
-                float diffuse = 0;
-                float specular = 0;
-                float attenuation = 1;
-                vec3 lightDirection = vec3(0, 0, 0);
-                
-                if (light.lightType == 1)  // ambient light
-                {
-                    ambient = 1;
-                }
-                else if (light.lightType == 2)  // directional light 
-                {
-                    lightDirection = normalize(light.direction);
-                }
-                else if (light.lightType == 3)  // point light 
-                {
-                    lightDirection = normalize(pointPosition - light.position);
-                    float distance = length(light.position - pointPosition);
-                    attenuation = 1.0 / (light.attenuation[0] 
-                                       + light.attenuation[1] * distance 
-                                       + light.attenuation[2] * distance * distance);
-                }
-                
-                if (light.lightType > 1)  // directional or point light
-                {
-                    pointNormal = normalize(pointNormal);
-                    diffuse = max(dot(pointNormal, -lightDirection), 0.0);
-                    diffuse *= attenuation;
-                }
-                return light.color * (ambient + diffuse + specular);
-            }
-            
+        return _GLSL_LIGHT_TYPE_STRUCT + self.declaring_light_uniforms_in_shader_code + _GLSL_CALC_LIGHT_FUNCTION + \
+    """        
             uniform mat4 projectionMatrix;
             uniform mat4 viewMatrix;
             uniform mat4 modelMatrix;
@@ -120,15 +127,15 @@ class FlatMaterial(LightedMaterial):
         """
 
     def update_render_settings(self):
-        if self.setting_dict["doubleSide"]:
+        if self.setting_dict[LightedMaterial.DOUBLE_SIDE_RENDER_SETTING]:
             glDisable(GL_CULL_FACE)
         else:
             glEnable(GL_CULL_FACE)
-        if self.setting_dict["wireframe"]:
+        if self.setting_dict[LightedMaterial.WIREFRAME_RENDER_STTING]:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-        glLineWidth(self.setting_dict["lineWidth"])
+        glLineWidth(self.setting_dict[LightedMaterial.LINE_WIDTH_RENDER_SETTING])
 
 
 class LambertMaterial(LightedMaterial):
@@ -142,15 +149,15 @@ class LambertMaterial(LightedMaterial):
                  bump_texture=None,
                  use_shadow=False):
         super().__init__(number_of_light_sources)
-        self.add_uniform("vec3", "baseColor", [1.0, 1.0, 1.0])
+        self.add_uniform("vec3", LightedMaterial.BASE_COLLOR_UNIFORM, [1.0, 1.0, 1.0])
         self.locate_uniforms()
 
         # Render both sides?
-        self.setting_dict["doubleSide"] = True
+        self.setting_dict[LightedMaterial.DOUBLE_SIDE_RENDER_SETTING] = True
         # Render triangles as wireframe?
-        self.setting_dict["wireframe"] = False
+        self.setting_dict[LightedMaterial.WIREFRAME_RENDER_STTING] = False
         # Set line thickness for wireframe rendering
-        self.setting_dict["lineWidth"] = 1
+        self.setting_dict[LightedMaterial.LINE_WIDTH_RENDER_SETTING] = 1
         self.set_properties(property_dict)
 
     @property
@@ -175,50 +182,9 @@ class LambertMaterial(LightedMaterial):
 
     @property
     def fragment_shader_code(self):
-        return """        
-            struct Light
-            {
-                int lightType;  // 1 = AMBIENT, 2 = DIRECTIONAL, 3 = POINT
-                vec3 color;  // used by all lights
-                vec3 direction;  // used by directional lights
-                vec3 position;  // used by point lights
-                vec3 attenuation;  // used by directional lights
-            };\n\n""" \
-            + self.declaring_light_uniforms_in_shader_code + """
-            vec3 calculateLight(Light light, vec3 pointPosition, vec3 pointNormal)
-            {
-                float ambient = 0;
-                float diffuse = 0;
-                float specular = 0;
-                float attenuation = 1;
-                vec3 lightDirection = vec3(0, 0, 0);
-                
-                if (light.lightType == 1)  // ambient light
-                {
-                    ambient = 1;
-                }                
-                else if (light.lightType == 2)  // directional light
-                {
-                    lightDirection = normalize(light.direction);
-                }
-                else if (light.lightType == 3)  // point light 
-                {
-                    lightDirection = normalize(pointPosition - light.position);
-                    float distance = length(light.position - pointPosition);
-                    attenuation = 1.0 / (light.attenuation[0] 
-                                       + light.attenuation[1] * distance 
-                                       + light.attenuation[2] * distance * distance);
-                }
-                
-                if (light.lightType > 1)  // directional or point light
-                {
-                    pointNormal = normalize(pointNormal);
-                    diffuse = max(dot(pointNormal, -lightDirection), 0.0);
-                    diffuse *= attenuation;
-                }
-                return light.color * (ambient + diffuse + specular);
-            }
-            
+        return _GLSL_LIGHT_TYPE_STRUCT + "\n\n""" \
+            + self.declaring_light_uniforms_in_shader_code + _GLSL_CALC_LIGHT_FUNCTION + \
+        """
             uniform vec3 baseColor;
             in vec3 position;
             in vec3 normal;
@@ -237,16 +203,16 @@ class LambertMaterial(LightedMaterial):
         """
 
     def update_render_settings(self):
-        if self.setting_dict["doubleSide"]:
+        if self.setting_dict[LightedMaterial.DOUBLE_SIDE_RENDER_SETTING]:
             glDisable(GL_CULL_FACE)
         else:
             glEnable(GL_CULL_FACE)
-        if self.setting_dict["wireframe"]:
+        if self.setting_dict[LightedMaterial.WIREFRAME_RENDER_STTING]:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         
-        glLineWidth(self.setting_dict["lineWidth"])
+        glLineWidth(self.setting_dict[LightedMaterial.LINE_WIDTH_RENDER_SETTING])
 
 
 class PhongMaterial(LightedMaterial):
@@ -257,7 +223,7 @@ class PhongMaterial(LightedMaterial):
                  property_dict=None,
                  number_of_light_sources=1):
         super().__init__(number_of_light_sources)
-        self.add_uniform("vec3", "baseColor", [1.0, 1.0, 1.0])
+        self.add_uniform("vec3", LightedMaterial.BASE_COLLOR_UNIFORM, [1.0, 1.0, 1.0])
 
         self.add_uniform("vec3", "viewPosition", [0, 0, 0])
         self.add_uniform("float", "specularStrength", 1.0)
@@ -266,11 +232,9 @@ class PhongMaterial(LightedMaterial):
         self.locate_uniforms()
 
         # Render both sides?
-        self.setting_dict["doubleSide"] = True
-        # Render triangles as wireframe?
-        self.setting_dict["wireframe"] = False
-        # Set line thickness for wireframe rendering
-        self.setting_dict["lineWidth"] = 1
+        self.setting_dict[LightedMaterial.DOUBLE_SIDE_RENDER_SETTING] = True
+        self.setting_dict[LightedMaterial.WIREFRAME_RENDER_STTING] = False
+        self.setting_dict[LightedMaterial.LINE_WIDTH_RENDER_SETTING] = 1
         self.set_properties(property_dict)
 
     @property
@@ -294,15 +258,7 @@ class PhongMaterial(LightedMaterial):
 
     @property
     def fragment_shader_code(self):
-        return """        
-            struct Light
-            {
-                int lightType;  // 1 = AMBIENT, 2 = DIRECTIONAL, 3 = POINT
-                vec3 color;  // used by all lights
-                vec3 direction;  // used by point lights
-                vec3 position;  // used by point lights
-                vec3 attenuation;  // used by point lights
-            };\n\n""" \
+        return _GLSL_LIGHT_TYPE_STRUCT + """\n\n""" \
             + self.declaring_light_uniforms_in_shader_code + """
             uniform vec3 viewPosition;
             uniform float specularStrength;
@@ -365,13 +321,13 @@ class PhongMaterial(LightedMaterial):
         """
 
     def update_render_settings(self):
-        if self.setting_dict["doubleSide"]:
+        if self.setting_dict[LightedMaterial.DOUBLE_SIDE_RENDER_SETTING]:
             glDisable(GL_CULL_FACE)
         else:
             glEnable(GL_CULL_FACE)
-        if self.setting_dict["wireframe"]:
+        if self.setting_dict[LightedMaterial.WIREFRAME_RENDER_STTING]:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         
-        glLineWidth(self.setting_dict["lineWidth"])
+        glLineWidth(self.setting_dict[LightedMaterial.LINE_WIDTH_RENDER_SETTING])

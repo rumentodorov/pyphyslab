@@ -25,20 +25,14 @@ class MovementRig(Shape3d):
     as well as turning left and right, and looking up and down
     """
     def __init__(self, units_per_second=1, degrees_per_second=60):
-        # Initialize base Object3D.
-        # Controls movement and turn left/right.
         super().__init__()
-        # Initialize attached Object3D; controls look up/down
         self._look_attachment = Shape3d()
         self.children_list = [self._look_attachment]
         self._look_attachment.parent = self
-        # Control rate of movement
         self._units_per_second = units_per_second
         self._degrees_per_second = degrees_per_second
         self.activated = False
 
-        # Customizable key mappings.
-        # Defaults: W, A, S, D, R, F (move), Q, E (turn), T, G (look)
         self.KEY_MOVE_FORWARDS = "w"
         self.KEY_MOVE_BACKWARDS = "s"
         self.KEY_MOVE_LEFT = "a"
@@ -53,8 +47,6 @@ class MovementRig(Shape3d):
         self.MOUSE_WEEL_UP = 1
         self.MOUSE_WEEL_DOWN = -1
 
-    # Adding and removing objects applies to look attachment.
-    # Override functions from the Object3D class.
     def add(self, child):
         self._look_attachment.add(child)
 

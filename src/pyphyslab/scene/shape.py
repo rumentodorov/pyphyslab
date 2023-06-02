@@ -3,7 +3,8 @@ import pyphyslab.core.matrix as matrix
 from OpenGL.GL import *
 
 class Shape3d:
-    
+    """The base class of all shapes. Provides multiple gemotric transformation methods"""
+
     def __init__(self):
         self._matrix = matrix.make_identity()
         self._parent = None
@@ -68,25 +69,17 @@ class Shape3d:
     
     @property
     def local_position(self):
-        """
-        Return the local position of the object (with respect to its parent)
-        """
         return [self._matrix.item((0, 3)),
                 self._matrix.item((1, 3)),
                 self._matrix.item((2, 3))]
     
     def set_position(self, position):
-        """ Set the local position of the object """
         self._matrix.itemset((0, 3), position[0])
         self._matrix.itemset((1, 3), position[1])
         self._matrix.itemset((2, 3), position[2])
 
     @property
     def rotation_matrix(self):
-        """
-        Returns 3x3 submatrix with rotation data.
-        3x3 top-left submatrix contains only rotation data.
-        """
         return np.array(
             [self._matrix[0][0:3],
              self._matrix[1][0:3],

@@ -7,12 +7,11 @@ class Grid(Mesh):
         geometry = Primitive()
         position_data = []
         color_data = []
-        # Create range of values
         values = []
         delta_size = size / divisions
         for n in range(divisions + 1):
             values.append(-size / 2 + n * delta_size)
-        # Add vertical lines
+
         for x in values:
             position_data.append([x, -size / 2, 0])
             position_data.append([x, size / 2, 0])
@@ -22,7 +21,7 @@ class Grid(Mesh):
             else:
                 color_data.append(grid_color)
                 color_data.append(grid_color)
-        # Add horizontal lines
+
         for y in values:
             position_data.append([-size / 2, y, 0])
             position_data.append([size / 2, y, 0])
@@ -41,5 +40,5 @@ class Grid(Mesh):
                 "lineType": "segments"
             }
         )
-        # Initialize the mesh
+
         super().__init__(geometry, material)

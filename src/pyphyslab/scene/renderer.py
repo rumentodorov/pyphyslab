@@ -3,9 +3,11 @@ import pygame as pg
 
 from pyphyslab.scene.shape import Mesh
 from pyphyslab.scene.light import Light
-
+from pyphyslab.material.material import Material
 
 class Renderer:
+
+    VIEW_POSTION_RENDER_UNIFORM = "viewPosition"
     
     def __init__(self, clear_color=(0, 0, 0)):
         glEnable(GL_DEPTH_TEST)
@@ -33,28 +35,29 @@ class Renderer:
         light_list = list(filter(lambda x: isinstance(x, Light), descendant_list))
 
         for mesh in mesh_list:
-            # If this object is not visible, continue to next object in list
+
             if not mesh.visible:
                 continue
             glUseProgram(mesh.material.program_ref)
-            # Bind VAO
+
             glBindVertexArray(mesh.vao_ref)
-            # Update uniform values stored outside of material
-            mesh.material.uniform_dict["modelMatrix"].data = mesh.global_matrix
-            mesh.material.uniform_dict["viewMatrix"].data = camera.view_matrix
-            mesh.material.uniform_dict["projectionMatrix"].data = camera.projection_matrix
+
+            
+            mesh.material.uniform_dict[Material.MODEL_MATRIX_UNIFORM].data = mesh.global_matrix
+            mesh.material.uniform_dict[Material.VIEW_MATRIX_UNIFORM].data = camera.view_matrix
+            mesh.material.uniform_dict[Material.PROJECTION_MATRIX_UNIFORM].data = camera.projection_matrix
 
             if "light0" in mesh.material.uniform_dict.keys():
                 for light_number in range(len(light_list)):
                     light_name = "light" + str(light_number)
                     light_instance = light_list[light_number]
                     mesh.material.uniform_dict[light_name].data = light_instance
-            # Add camera position if needed (specular lighting)
-            if "viewPosition" in mesh.material.uniform_dict.keys():
-                mesh.material.uniform_dict["viewPosition"].data = camera.global_position
+
+            if Renderer.VIEW_POSTION_RENDER_UNIFORM in mesh.material.uniform_dict.keys():
+                mesh.material.uniform_dict[Renderer.VIEW_POSTION_RENDER_UNIFORM].data = camera.global_position
 
             for uniform_object in mesh.material.uniform_dict.values():
                 uniform_object.upload()
 
             mesh.material.update_render_settings()
-            glDrawArrays(mesh.material.setting_dict["drawStyle"], 0, mesh.geometry.vertex_count)
+            glDrawArrays(mesh.material.setting_dict[Material.DRAWING_STYLE_RENDER_SETTING], 0, mesh.geometry.vertex_count)

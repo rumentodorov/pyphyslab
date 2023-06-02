@@ -16,6 +16,7 @@ class Material:
     DOUBLE_SIDE_RENDER_SETTING = "doubleSide"
     WIREFRAME_RENDER_STTING = "wireframe"    
     LINE_WIDTH_RENDER_SETTING = "lineWidth"
+    LINE_TYPE_RENDER_SETTING = "lineType"
 
     def __init__(self, vertex_shader_code, fragment_shader_code):
         self.program_ref = shader.initialize_program(vertex_shader_code,  fragment_shader_code)

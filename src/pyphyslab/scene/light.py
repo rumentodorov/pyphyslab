@@ -1,6 +1,7 @@
 from pyphyslab.scene.shape import Shape3d
 
 class Light(Shape3d):
+    """ Generic light """
     AMBIENT = 1
     DIRECTIONAL = 2
     POINT = 3
@@ -12,17 +13,22 @@ class Light(Shape3d):
         self.attenuation = [1, 0, 0]
     
 class AmbientLight(Light):
+    """ Ambient light """
     def __init__(self, color=(1, 1, 1)):
         super().__init__(Light.AMBIENT)
         self._color = color
 
 class DirectionalLight(Light):
+    """ Directional light """
+
     def __init__(self, color=(1, 1, 1), direction=(0, -1, 0)):
         super().__init__(Light.DIRECTIONAL)
         self._color = color
         self.set_direction(direction)
 
 class PointLight(Light):
+    """ Point light """
+
     def __init__(self,
                  color=(1, 1, 1),
                  position=(0, 0, 0),

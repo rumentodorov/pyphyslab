@@ -6,6 +6,8 @@ from pyphyslab.scene.shape import Mesh
 from pyphyslab.material.texture import TextureMaterial
 
 class HeadsUpDisplay:
+    """Class representing heads up display"""
+
     def __init__(self, screen_size=(800, 600)):
         self.hud_scene = Scene()
         self.hud_camera = Camera()

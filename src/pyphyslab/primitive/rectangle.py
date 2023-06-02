@@ -14,7 +14,7 @@ class RectanglePrimitive(Primitive):
         c0, c1, c2, c3 = [1, 1, 1], [1, 0, 0], [0, 1, 0], [0, 0, 1]
         position_data = [p0, p1, p3, p0, p3, p2]
         color_data = [c0, c1, c3, c0, c3, c2]
-        # texture coordinates
+ 
         t0, t1, t2, t3 = [0, 0], [1, 0], [0, 1], [1, 1]
         uv_data = [t0, t1, t3, t0, t3, t2]
         self.add_attribute("vec3", "vertexPosition", position_data)

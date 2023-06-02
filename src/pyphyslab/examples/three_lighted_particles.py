@@ -17,7 +17,7 @@ from pyphyslab.scene.grid import Grid
 from pyphyslab.primitive.ellipsoid import EllipsoidPrimitive
 
 from pyphyslab.scene.light import AmbientLight, DirectionalLight
-from pyphyslab.material.lighted import PhongMaterial, LambertMaterial
+from pyphyslab.material.lighted import PhongMaterial, LambertMaterial, FlatMaterial
 
 class Example(Window):
      
@@ -42,6 +42,11 @@ class Example(Window):
             number_of_light_sources=2
         )
 
+        fm1 = FlatMaterial(
+            property_dict={"baseColor": [0.1, 0.3, 0.0]},
+            number_of_light_sources=2
+        )
+
         lmb1 = LambertMaterial(
             property_dict={"baseColor": [0.2, 0.3, 0.5]},
             number_of_light_sources=2
@@ -49,13 +54,17 @@ class Example(Window):
 
         ellipse = EllipsoidPrimitive(width=0.5, height=0.5, depth=0.5)
         
-        sphere1 = Mesh(ellipse, lmb1)
+        sphere1 = Mesh(ellipse, pm1)
         sphere1.set_position([0.0, 2.0, -4.0])
         self.scene.add(sphere1)
 
-        sphere2 = Mesh(ellipse, pm1)
+        sphere2 = Mesh(ellipse, lmb1)
         sphere2.set_position([-2.0, 2.0, -4.0])
         self.scene.add(sphere2)
+
+        sphere3 = Mesh(ellipse, fm1)
+        sphere3.set_position([-2.0, 2.2, -5.0])
+        self.scene.add(sphere3)
 
         grid = Grid(
             size=20,
